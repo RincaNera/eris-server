@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: campfire-spring
+  config:
+    import: configserver:https://localhost:8888/
+  cloud:
+    config:
+      fail-fast: true
+      tls:
+        enabled: true
+        key-store: classpath:keystore.p12
+        key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
+        key-store-type: PKCS12
+        key-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
+        key-alias: eris-client
+        trust-store: classpath:truststore.p12
+        trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD}
+        trust-store-type: PKCS12
+  datasource:
+    url: jdbc:sqlite:./data/app.db
+    driver-class-name: org.sqlite.JDBC
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:ddl-auto: update
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    properties:
+      hibernate:
+        type:
+          preferred_uuid_jdbc_type: VARCHAR
+    show-sql: true
+
+security: 
+  jwt:
+    expiration-time: 3600000
+    refresh-token:
+      expiration-time: 604800000
+  cors.allowed-origins: https://localhost:4200
+
+org:
+  springframework:
+    security:
+      messaging:
+        web:
+          socket: DEBUG
+    web:
+      socket:
+        server: DEBUG
+
+logging:
+  level:
+    javax:
+      net:
+        ssl: DEBUG
+    org:
+      apache:
+        http:
+          wire: DEBUG
