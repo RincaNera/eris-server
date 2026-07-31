@@ -1,6 +1,7 @@
 package com.rinca.erisserver.controllers;
 
 import com.rinca.erisserver.dto.*;
+import com.rinca.erisserver.dto.mappers.MessageResponseMapper;
 import com.rinca.erisserver.exceptions.TopicNotFoundException;
 import com.rinca.erisserver.models.Topic;
 import com.rinca.erisserver.services.MessageService;
@@ -32,8 +33,8 @@ public class TopicController {
 	public Topic create(@Valid @RequestBody TopicCreateRequest request) {
 		Topic topic = topicService.createTopic(request.name());
 		messagingTemplate.convertAndSend(
-				"/topic/system",
-				new SystemEvent("CREATE", topic.getId().toString(), topic.getName())
+			"/topic/system",
+			new SystemEvent("CREATE", topic.getId().toString(), topic.getName())
 		);
 		return topic;
 	}
@@ -43,8 +44,8 @@ public class TopicController {
 	public void delete(@PathVariable UUID id) {
 		topicService.deleteTopic(id);
 		messagingTemplate.convertAndSend(
-				"/topic/system",
-				new SystemEvent("DELETE", id.toString(), null)
+			"/topic/system",
+			new SystemEvent("DELETE", id.toString(), null)
 		);
 	}
 
@@ -55,8 +56,8 @@ public class TopicController {
 		request.getName().ifPresent(topic::setName);
 		topicService.editTopic(topic);
 		messagingTemplate.convertAndSend(
-				"/topic/system",
-				new SystemEvent("EDIT", id.toString(), topic.getName())
+			"/topic/system",
+			new SystemEvent("EDIT", id.toString(), topic.getName())
 		);
 	}
 
@@ -64,26 +65,19 @@ public class TopicController {
 	@ResponseStatus(HttpStatus.OK)
 	public List<TopicListResponse> getAll() {
 		return topicService.getAllTopics()
-				.stream()
-				.map(t -> new TopicListResponse(t.getId().toString(), t.getName()))
-				.toList();
+			.stream()
+			.map(t -> new TopicListResponse(t.getId().toString(), t.getName()))
+			.toList();
 	}
 
 	@GetMapping("/{id}/messages")
 	@ResponseStatus(HttpStatus.OK)
 	public List<MessageResponse> getHistory(@PathVariable UUID id) {
 		Topic topic = topicService.getTopicById(id)
-				.orElseThrow(() -> new TopicNotFoundException("Le topic demandé n'existe pas"));
+			.orElseThrow(() -> new TopicNotFoundException("Le topic demandé n'existe pas"));
 		return this.messageService.getRecentMessages(topic)
-				.stream()
-				.map(m -> new MessageResponse(
-						m.getId(),
-						m.getUser().getId(),
-						m.getUser().getUsername(),
-						m.getUser().getAvatar(),
-						m.getCreatedAt(),
-						m.getContent(),
-						m.getTopic().getId().toString()))
-				.toList();
+			.stream()
+			.map(MessageResponseMapper::toResponseMessage)
+			.toList();
 	}
 }

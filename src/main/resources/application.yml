@@ -1,8 +1,17 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
+    key-store-type: PKCS12
+    key-alias: eris-server
+
 spring:
   application:
     name: campfire-spring
   config:
-    import: configserver:https://localhost:8888/
+    import: configserver:${CONFIG_SERVER_HOST}
   cloud:
     config:
       fail-fast: true
@@ -10,9 +19,9 @@ spring:
         enabled: true
         key-store: classpath:keystore.p12
         key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
-        key-store-type: PKCS12
         key-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
-        key-alias: eris-client
+        key-store-type: PKCS12
+        key-alias: eris-server
         trust-store: classpath:truststore.p12
         trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD}
         trust-store-type: PKCS12
@@ -30,13 +39,23 @@ spring:
         type:
           preferred_uuid_jdbc_type: VARCHAR
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 101MB
+      file-size-threshold: 0
 
-security: 
+security:
   jwt:
     expiration-time: 3600000
     refresh-token:
       expiration-time: 604800000
   cors.allowed-origins: https://localhost:4200
+
+app:
+  db-parser: sqlite
+  messages:
+    attachments-storage-path: 'C:/Users/Ban-K/Documents/dev/storage'
 
 org:
   springframework:
@@ -57,3 +76,5 @@ logging:
       apache:
         http:
           wire: DEBUG
+      springframework:
+        security: DEBUG

@@ -8,7 +8,7 @@ import java.io.File;
 @SpringBootApplication
 public class SocketApplication {
 
-    void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(SocketApplication.class, args);
     }
 

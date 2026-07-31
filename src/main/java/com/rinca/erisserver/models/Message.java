@@ -3,8 +3,11 @@ package com.rinca.erisserver.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Message {
@@ -22,6 +25,8 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "topic_id")
     private Topic topic;
+    @OneToMany(mappedBy = "message")
+    private List<Attachment> attachments;
 
     public Message() {}
 
@@ -70,5 +75,13 @@ public class Message {
 
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }

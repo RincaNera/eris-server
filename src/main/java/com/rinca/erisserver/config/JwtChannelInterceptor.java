@@ -2,7 +2,7 @@ package com.rinca.erisserver.config;
 
 import com.rinca.erisserver.exceptions.InvalidTokenException;
 import com.rinca.erisserver.models.User;
-import com.rinca.erisserver.repositories.UserRepository;
+import com.rinca.erisserver.services.UserService;
 import com.rinca.erisserver.services.JwtService;
 import org.jspecify.annotations.Nullable;
 import org.springframework.messaging.Message;
@@ -16,12 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 public class JwtChannelInterceptor implements ChannelInterceptor {
 
 	private final JwtService jwtService;
-	private final UserRepository userRepository;
+	private final UserService userService;
 
-	public JwtChannelInterceptor(JwtService jwtService, UserRepository userRepository) {
+	public JwtChannelInterceptor(JwtService jwtService, UserService userService) {
 		this.jwtService = jwtService;
-		this.userRepository = userRepository;
-	}
+        this.userService = userService;
+    }
 
 	@Override
 	public @Nullable Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -35,9 +35,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 				if (!jwtService.isTokenValid(token)) {
 					throw new InvalidTokenException("Token invalide ou expiré");
 				}
-				Long username = jwtService.extractUsername(token);
-				User user = userRepository.findById(username)
-						.orElseThrow(() -> new InvalidTokenException("Utilisateur non trouvé."));
+				Long userId = jwtService.extractUsername(token);
+				User user = userService.findById(userId).orElseThrow(() -> new InvalidTokenException("Utilisateur non trouvé."));
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 				accessor.setUser(authentication);
 		}

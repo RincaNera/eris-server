@@ -37,6 +37,7 @@
     <properties>
         <java.version>25</java.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
+        <start-class>com.rinca.erisserver.SocketApplication</start-class>
     </properties>
     <dependencyManagement>
         <dependencies>

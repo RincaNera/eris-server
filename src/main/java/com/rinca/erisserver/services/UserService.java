@@ -5,6 +5,8 @@ import com.rinca.erisserver.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 	private final UserRepository userRepository;
@@ -22,5 +24,9 @@ public class UserService {
 		String encodedPassword = passwordEncoder.encode(rawPassword);
 		User user = new User(username, email, encodedPassword, null);
 		return userRepository.save(user);
+	}
+
+	public Optional<User> findById(Long id) {
+		return userRepository.findById(id);
 	}
 }

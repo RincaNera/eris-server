@@ -2,6 +2,7 @@ package com.rinca.erisserver.config;
 
 import com.rinca.erisserver.services.CustomUserDetailsService;
 import com.rinca.erisserver.services.JwtService;
+import com.rinca.erisserver.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,8 +57,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter(
-            JwtService jwtService,
-            CustomUserDetailsService userDetailsService
+            JwtService jwtService
     ) {
         return new JwtAuthenticationFilter(jwtService);
     }
@@ -76,13 +76,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/api/v1/auth/**", "/ws/**")
+                                .requestMatchers("/api/v1/auth/**", "/ws/**", "/images/**", "/error")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .authenticationProvider(authenticationProvider(userDetailsService, passwordEncoder))
                 .addFilterBefore(
-                        jwtAuthenticationFilter(jwtService, userDetailsService),
+                        jwtAuthenticationFilter(jwtService),
                         UsernamePasswordAuthenticationFilter.class
                 );
         return http.build();

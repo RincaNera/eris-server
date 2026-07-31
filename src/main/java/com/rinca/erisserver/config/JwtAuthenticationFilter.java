@@ -1,5 +1,7 @@
 package com.rinca.erisserver.config;
 
+import com.rinca.erisserver.models.User;
+import com.rinca.erisserver.services.CustomUserDetailsService;
 import com.rinca.erisserver.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -20,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	public JwtAuthenticationFilter(JwtService jwtService) {
 		this.jwtService = jwtService;
-	}
+    }
 
 	@Override
 	protected void doFilterInternal(
@@ -35,14 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			token = authHeader.substring(7);
 		}
 
-        if (token != null && jwtService.isTokenValid(token)) {
-            Long username = jwtService.extractUsername(token);
+		System.out.println(token);
 
-			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (token != null && jwtService.isTokenValid(token)) {
+            Long userId = jwtService.extractUsername(token);
+
+			if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				Collection<GrantedAuthority> authorities = jwtService.extractRoles(token);
 
-				UsernamePasswordAuthenticationToken authenticationToken =
-						new UsernamePasswordAuthenticationToken(username, null, authorities);
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(new User(userId), null, authorities);
 				SecurityContext context = SecurityContextHolder.createEmptyContext();
 				context.setAuthentication(authenticationToken);
 				SecurityContextHolder.setContext(context);

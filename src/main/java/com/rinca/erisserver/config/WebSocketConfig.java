@@ -2,6 +2,7 @@ package com.rinca.erisserver.config;
 
 import com.rinca.erisserver.repositories.UserRepository;
 import com.rinca.erisserver.services.JwtService;
+import com.rinca.erisserver.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -19,11 +20,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String allowedOrigins;
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public WebSocketConfig(JwtService jwtService, UserRepository userRepository) {
+    public WebSocketConfig(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(
-                new JwtChannelInterceptor(jwtService, userRepository),
+                new JwtChannelInterceptor(jwtService, userService),
                 new SecurityContextChannelInterceptor()
         );
     }

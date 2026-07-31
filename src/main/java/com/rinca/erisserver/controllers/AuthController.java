@@ -17,7 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/eris-api/api/v1/auth")
 public class AuthController {
 
 	private final UserService userService;
