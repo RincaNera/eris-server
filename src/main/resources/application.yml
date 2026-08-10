@@ -9,7 +9,7 @@ server:
 
 spring:
   application:
-    name: campfire-spring
+    name: eris-api-spring
   config:
     import: configserver:${CONFIG_SERVER_HOST}
   cloud:
