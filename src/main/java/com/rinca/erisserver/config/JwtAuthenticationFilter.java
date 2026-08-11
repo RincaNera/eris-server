@@ -38,8 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			token = authHeader.substring(7);
 		}
 
-		System.out.println(token);
-
         if (token != null && jwtService.isTokenValid(token)) {
             Long userId = jwtService.extractUsername(token);
 
