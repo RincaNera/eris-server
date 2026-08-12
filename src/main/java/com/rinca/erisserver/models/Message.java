@@ -16,7 +16,7 @@ public class Message {
     private Long id;
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "account_id")
     private User user;
     @NotNull
     private Date createdAt;
